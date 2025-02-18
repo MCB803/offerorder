@@ -7,10 +7,6 @@ import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.concurrent.DelegatingSecurityContextExecutor;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-
-import java.util.concurrent.Executor;
 
 @Configuration
 public class RedissonConfig {
@@ -28,17 +24,5 @@ public class RedissonConfig {
         config.useSingleServer().setAddress(redisUri);
         config.setCodec(new JsonJacksonCodec());
         return Redisson.create(config);
-    }
-
-    @Bean(name = "asyncExecutor")
-    public Executor asyncExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(10);
-        executor.setMaxPoolSize(50);
-        executor.setQueueCapacity(100);
-        executor.setThreadNamePrefix("AsyncRoute-");
-        executor.initialize();
-
-        return new DelegatingSecurityContextExecutor(executor);
     }
 }
