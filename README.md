@@ -42,6 +42,7 @@
    docker-compose up --build
    ```
 
+##If you want to set it up locally
 ### Backend:
 1. Clone the offerorder repository:
    ```bash
