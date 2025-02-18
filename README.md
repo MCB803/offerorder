@@ -2,19 +2,19 @@
 
 ## Features
 ### Backend (Spring Boot)
-- Flight route calculations with caching support
+- Flight route calculations by using djikstra s algorithm with caching support
 - **Concurrent processing for route search**
 - Location and transportation management (Admin only)
 - Authentication and authorization for admins and agencies
-- Database support for **PostgreSQL, MySQL, MSSQL, and H2**
+- Database support for **PostgreSQL
 - RESTful API with **Swagger** documentation
 - **Liquibase** for database migrations
 - Dockerized deployment
 - Backend validations enforced
 - Logging for easy debugging and error tracking.
 
-### Frontend (React SPA)
-- Responsive single-page application (SPA)
+### Frontend (React)
+- Responsive application 
 - Sidebar and header for easy navigation
 - Flight route search with dropdowns for origin, destination, and trip date
 - Route details displayed in a side panel
@@ -24,7 +24,7 @@
 ### Backend:
 - **Java 21** (Spring Boot framework)
 - **Hibernate ORM**
-- **PostgreSQL / MySQL / MSSQL / H2** (database support)
+- **PostgreSQL**(database support)
 - **Swagger** (API documentation)
 - **Spring Security** (authentication & authorization)
 - **Liquibase** (database migrations)
@@ -43,7 +43,7 @@
    docker-compose up --build
    ```
 
-If you want to set it up locally
+If you want to set it up locally:
 
 
 ### Backend:
