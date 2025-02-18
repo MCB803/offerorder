@@ -1,0 +1,41 @@
+# ------------------------------
+# OS-specific files
+# ------------------------------
+.DS_Store
+Thumbs.db
+
+# ------------------------------
+# IDE files
+# ------------------------------
+.idea/
+*.iml
+
+# ------------------------------
+# Maven & Java build output
+# ------------------------------
+.mvn/
+mvnw
+mvnw.cmd
+**/target/
+**/build/
+*.jar
+*.war
+*.ear
+
+# ------------------------------
+# Logs
+# ------------------------------
+**/logs/
+*.log
+
+# ------------------------------
+# Node.js / React / Vue / Angular
+# ------------------------------
+frontend/node_modules/
+npm-debug.log
+yarn-error.log
+
+# ------------------------------
+# Docker overrides (if you want to exclude them)
+# ------------------------------
+docker-compose.override.yml

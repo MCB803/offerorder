@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!-- 1. Create schema 'security' if it does not exist -->
+    <changeSet id="1" author="mert">
+        <preConditions onFail="MARK_RAN" onError="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM pg_namespace WHERE nspname = 'security';
+            </sqlCheck>
+        </preConditions>
+        <sql>CREATE SCHEMA IF NOT EXISTS security;</sql>
+    </changeSet>
+
+    <!-- 4. Create sequence for public.locations -->
+    <changeSet id="4" author="mert">
+        <preConditions onFail="MARK_RAN" onError="MARK_RAN">
+            <not>
+                <sequenceExists sequenceName="locations_id_seq" schemaName="public"/>
+            </not>
+        </preConditions>
+        <createSequence sequenceName="locations_id_seq" schemaName="public" startValue="1" incrementBy="1" cacheSize="1"/>
+    </changeSet>
+
+    <!-- 5. Create public.locations table -->
+    <changeSet id="5" author="mert">
+        <preConditions onFail="MARK_RAN" onError="MARK_RAN">
+            <not>
+                <tableExists tableName="locations" schemaName="public"/>
+            </not>
+        </preConditions>
+        <createTable tableName="locations" schemaName="public">
+            <column name="id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="country" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="city" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="location_code" type="VARCHAR(10)"/>
+            <column name="latitude" type="NUMERIC(9,6)"/>
+            <column name="longitude" type="NUMERIC(9,6)"/>
+        </createTable>
+        <addPrimaryKey tableName="locations" schemaName="public" columnNames="id" constraintName="locations_pkey"/>
+        <addUniqueConstraint tableName="locations" schemaName="public" columnNames="location_code" constraintName="locations_location_code_key"/>
+    </changeSet>
+
+    <!-- 6. Set default value for locations.id -->
+    <changeSet id="6" author="mert">
+        <preConditions onFail="MARK_RAN" onError="MARK_RAN">
+            <tableExists tableName="locations" schemaName="public"/>
+        </preConditions>
+        <addDefaultValue tableName="locations" schemaName="public" columnName="id"
+                         defaultValueComputed="nextval('public.locations_id_seq'::regclass)"/>
+    </changeSet>
+
+    <!-- 7. Create public.transportation_operating_days table -->
+    <changeSet id="7" author="mert">
+        <preConditions onFail="MARK_RAN" onError="MARK_RAN">
+            <not>
+                <tableExists tableName="transportation_operating_days" schemaName="public"/>
+            </not>
+        </preConditions>
+        <createTable tableName="transportation_operating_days" schemaName="public">
+            <column name="transportation_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="operating_day" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="transportation_operating_days" schemaName="public"
+                       columnNames="transportation_id, operating_day" constraintName="transportation_operating_days_pkey"/>
+    </changeSet>
+
+    <!-- 8. Create sequence for public.transportations -->
+    <changeSet id="8" author="mert">
+        <preConditions onFail="MARK_RAN" onError="MARK_RAN">
+            <not>
+                <sequenceExists sequenceName="transportations_id_seq" schemaName="public"/>
+            </not>
+        </preConditions>
+        <createSequence sequenceName="transportations_id_seq" schemaName="public" startValue="1" incrementBy="1" cacheSize="1"/>
+    </changeSet>
+
+    <!-- 9. Create public.transportations table -->
+    <changeSet id="9" author="mert">
+        <preConditions onFail="MARK_RAN" onError="MARK_RAN">
+            <not>
+                <tableExists tableName="transportations" schemaName="public"/>
+            </not>
+        </preConditions>
+        <createTable tableName="transportations" schemaName="public">
+            <column name="id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="origin_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="destination_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="transportations" schemaName="public" columnNames="id" constraintName="transportations_pkey"/>
+        <addDefaultValue tableName="transportations" schemaName="public" columnName="id"
+                         defaultValueComputed="nextval('public.transportations_id_seq'::regclass)"/>
+    </changeSet>
+
+    <!-- 10. Create security.users table -->
+    <changeSet id="10" author="mert">
+        <preConditions onFail="MARK_RAN" onError="MARK_RAN">
+            <not>
+                <tableExists tableName="users" schemaName="security"/>
+            </not>
+        </preConditions>
+        <createTable tableName="users" schemaName="security">
+            <column name="id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="username" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="enabled" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createSequence sequenceName="users_id_seq" schemaName="security" startValue="1" incrementBy="1" cacheSize="1"/>
+        <addDefaultValue tableName="users" schemaName="security" columnName="id"
+                         defaultValueComputed="nextval('security.users_id_seq'::regclass)"/>
+        <addPrimaryKey tableName="users" schemaName="security" columnNames="id" constraintName="users_pkey"/>
+        <addUniqueConstraint tableName="users" schemaName="security" columnNames="username" constraintName="users_username_key"/>
+    </changeSet>
+
+    <!-- 11. Create security.authorities table -->
+    <changeSet id="11" author="mert">
+        <preConditions onFail="MARK_RAN" onError="MARK_RAN">
+            <not>
+                <tableExists tableName="authorities" schemaName="security"/>
+            </not>
+        </preConditions>
+        <createTable tableName="authorities" schemaName="security">
+            <column name="id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="username" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="authority" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createSequence sequenceName="authorities_id_seq" schemaName="security" startValue="1" incrementBy="1" cacheSize="1"/>
+        <addDefaultValue tableName="authorities" schemaName="security" columnName="id"
+                         defaultValueComputed="nextval('security.authorities_id_seq'::regclass)"/>
+        <addPrimaryKey tableName="authorities" schemaName="security" columnNames="id" constraintName="authorities_pkey"/>
+    </changeSet>
+
+    <!-- 12. Add foreign key constraint for transportation_operating_days.transportation_id -->
+    <changeSet id="12" author="mert" runOnChange="true">
+        <preConditions onFail="MARK_RAN" onError="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_operating_days_transportation"
+                                            schemaName="public"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseTableName="transportation_operating_days"
+                                 baseColumnNames="transportation_id"
+                                 constraintName="fk_operating_days_transportation"
+                                 referencedTableName="transportations"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"
+                                 baseTableSchemaName="public"
+                                 referencedTableSchemaName="public"/>
+    </changeSet>
+
+    <!-- 13. Add foreign key constraint for transportations.origin_id -->
+    <changeSet id="13" author="mert" runOnChange="true">
+        <preConditions onFail="MARK_RAN" onError="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_transportation_origin"
+                                            schemaName="public"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseTableName="transportations"
+                                 baseColumnNames="origin_id"
+                                 constraintName="fk_transportation_origin"
+                                 referencedTableName="locations"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"
+                                 baseTableSchemaName="public"
+                                 referencedTableSchemaName="public"/>
+    </changeSet>
+
+    <!-- 14. Add foreign key constraint for transportations.destination_id -->
+    <changeSet id="14" author="mert" runOnChange="true">
+        <preConditions onFail="MARK_RAN" onError="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_transportation_destination"
+                                            schemaName="public"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseTableName="transportations"
+                                 baseColumnNames="destination_id"
+                                 constraintName="fk_transportation_destination"
+                                 referencedTableName="locations"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"
+                                 baseTableSchemaName="public"
+                                 referencedTableSchemaName="public"/>
+    </changeSet>
+
+    <!-- 15. Add foreign key constraint for security.authorities.username -->
+    <changeSet id="15" author="mert" runOnChange="true">
+        <preConditions onFail="MARK_RAN" onError="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_user_authority"
+                                            schemaName="security"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseTableName="authorities"
+                                 baseColumnNames="username"
+                                 constraintName="fk_user_authority"
+                                 referencedTableName="users"
+                                 referencedColumnNames="username"
+                                 onDelete="CASCADE"
+                                 baseTableSchemaName="security"
+                                 referencedTableSchemaName="security"/>
+    </changeSet>
+
+    <!-- 16. Inline SQL to insert data into locations -->
+    <changeSet id="16" author="system" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM public.locations;
+            </sqlCheck>
+        </preConditions>
+        <sql splitStatements="true" endDelimiter=";">
+            INSERT INTO public.locations (id, name, country, city, location_code, latitude, longitude) VALUES
+                                                                                                           (49, 'Istanbul Airport', 'Turkey', 'Istanbul', 'IST', 41.275278, 28.751944),
+                                                                                                           (3, 'London Heathrow', 'UK', 'London', 'LHR', 51.470022, -0.454295),
+                                                                                                           (31, 'New York JFK', 'USA', 'New York', 'JFK', 40.641311, -73.778139),
+                                                                                                           (5, 'Tokyo Haneda', 'Japan', 'Tokyo', 'HND', 35.549393, 139.779839),
+                                                                                                           (4, 'Paris Charles de Gaulle', 'France', 'Paris', 'CDG', 49.009690, 2.547925),
+                                                                                                           (6, 'Frankfurt Airport', 'Germany', 'Frankfurt', 'FRA', 50.037933, 8.562152),
+                                                                                                           (7, 'Dubai International', 'UAE', 'Dubai', 'DXB', 25.253174, 55.365673),
+                                                                                                           (8, 'Port Authority', 'USA', 'New York', 'PA_NY', 40.756961, -73.990275),
+                                                                                                           (2, 'Los Angeles International', 'USA', 'Los Angeles', 'LAX', 33.941589, -118.40853),
+                                                                                                           (9, 'Santa Monica Pier', 'USA', 'Los Angeles', 'SMP', 34.010090, -118.496948),
+                                                                                                           (11, 'Times Square', 'USA', 'New York', 'TSNY', 	40.758896, -73.985130),
+                                                                                                           (12, 'Taksim Square', 'Turkey', 'Istanbul', 'TSTR', 41.036945, 	28.985832),
+                                                                                                           (48, 'Wembley Stadium', 'UK', 'London', 'WMB', 51.555973, 	-0.279672),
+                                                                                                           (46, 'Bursa Yenisehir Airport', 'Turkey', 'Bursa', 'YEI', 40.2558, 29.5624),
+                                                                                                           (50, 'Ordu Giresun Airport', 'Turkey', 'Ordu', 'OGU', 40.96473, 38.08024),
+                                                                                                           (44, 'Eiffel Tower', 'France', 'Paris', 'EFFR',  48.858093, 2.294694);
+        </sql>
+    </changeSet>
+
+    <!-- 17. Inline SQL to insert data into transportations -->
+    <changeSet id="17" author="system" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM public.transportations;
+            </sqlCheck>
+        </preConditions>
+        <sql splitStatements="true" endDelimiter=";">
+            INSERT INTO public.transportations (id, origin_id, destination_id, type) VALUES
+                                                                                         (5, 2, 3, 'FLIGHT'),
+                                                                                         (6, 44, 4, 'BUS'),
+                                                                                         (7, 4, 2, 'FLIGHT'),
+                                                                                         (8, 2, 4, 'FLIGHT'),
+                                                                                         (11, 2, 3, 'BUS'),
+                                                                                         (4, 2, 9, 'UBER'),
+                                                                                         (13, 2, 5, 'FLIGHT'),
+                                                                                         (15, 46, 12, 'BUS'),
+                                                                                         (16, 12, 46, 'BUS'),
+                                                                                         (17, 46, 3, 'FLIGHT'),
+                                                                                         (18, 3, 48, 'SUBWAY'),
+                                                                                         (19, 3, 48, 'UBER'),
+                                                                                         (21, 12, 49, 'BUS'),
+                                                                                         (22, 12, 49, 'UBER'),
+                                                                                         (20, 49, 3, 'FLIGHT'),
+                                                                                         (23, 49, 50, 'FLIGHT');
+        </sql>
+    </changeSet>
+
+    <!-- 18. Inline SQL to insert data into transportation_operating_days -->
+    <!-- Replace the sample values below with the exact 107 rows from your CSV. -->
+    <changeSet id="18" author="system" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM public.transportation_operating_days;
+            </sqlCheck>
+        </preConditions>
+        <sql splitStatements="true" endDelimiter=";">
+            INSERT INTO public.transportation_operating_days (transportation_id, operating_day) VALUES
+                                                                                                    (6, 1),
+                                                                                                    (6, 2),
+                                                                                                    (6, 3),
+                                                                                                    (6, 4),
+                                                                                                    (6, 5),
+                                                                                                    (6, 6),
+                                                                                                    (6, 7),
+                                                                                                    (7, 1),
+                                                                                                    (7, 2),
+                                                                                                    (7, 3),
+                                                                                                    (7, 4),
+                                                                                                    (7, 5),
+                                                                                                    (7, 6),
+                                                                                                    (7, 7),
+                                                                                                    (8, 1),
+                                                                                                    (8, 2),
+                                                                                                    (8, 3),
+                                                                                                    (8, 4),
+                                                                                                    (8, 5),
+                                                                                                    (8, 6),
+                                                                                                    (8, 7),
+                                                                                                    (11, 1),
+                                                                                                    (11, 2),
+                                                                                                    (11, 3),
+                                                                                                    (11, 4),
+                                                                                                    (11, 5),
+                                                                                                    (11, 6),
+                                                                                                    (11, 7),
+                                                                                                    (4, 1),
+                                                                                                    (4, 2),
+                                                                                                    (4, 3),
+                                                                                                    (4, 4),
+                                                                                                    (4, 5),
+                                                                                                    (4, 6),
+                                                                                                    (4, 7),
+                                                                                                    (13, 1),
+                                                                                                    (13, 2),
+                                                                                                    (5, 1),
+                                                                                                    (5, 2),
+                                                                                                    (5, 3),
+                                                                                                    (5, 4),
+                                                                                                    (5, 5),
+                                                                                                    (5, 6),
+                                                                                                    (5, 7),
+                                                                                                    (15, 1),
+                                                                                                    (15, 2),
+                                                                                                    (15, 3),
+                                                                                                    (15, 4),
+                                                                                                    (15, 5),
+                                                                                                    (15, 6),
+                                                                                                    (15, 7),
+                                                                                                    (16, 1),
+                                                                                                    (16, 2),
+                                                                                                    (16, 3),
+                                                                                                    (16, 4),
+                                                                                                    (16, 5),
+                                                                                                    (16, 6),
+                                                                                                    (16, 7),
+                                                                                                    (17, 1),
+                                                                                                    (17, 2),
+                                                                                                    (17, 3),
+                                                                                                    (17, 4),
+                                                                                                    (17, 5),
+                                                                                                    (17, 6),
+                                                                                                    (17, 7),
+                                                                                                    (18, 1),
+                                                                                                    (18, 2),
+                                                                                                    (18, 3),
+                                                                                                    (18, 4),
+                                                                                                    (18, 5),
+                                                                                                    (18, 6),
+                                                                                                    (18, 7),
+                                                                                                    (19, 1),
+                                                                                                    (19, 2),
+                                                                                                    (19, 3),
+                                                                                                    (19, 4),
+                                                                                                    (19, 5),
+                                                                                                    (19, 6),
+                                                                                                    (19, 7),
+                                                                                                    (21, 1),
+                                                                                                    (21, 2),
+                                                                                                    (21, 3),
+                                                                                                    (21, 4),
+                                                                                                    (21, 5),
+                                                                                                    (21, 6),
+                                                                                                    (21, 7),
+                                                                                                    (22, 1),
+                                                                                                    (22, 2),
+                                                                                                    (22, 3),
+                                                                                                    (22, 4),
+                                                                                                    (22, 5),
+                                                                                                    (22, 6),
+                                                                                                    (22, 7),
+                                                                                                    (20, 1),
+                                                                                                    (20, 2),
+                                                                                                    (20, 3),
+                                                                                                    (20, 4),
+                                                                                                    (20, 5),
+                                                                                                    (20, 6),
+                                                                                                    (20, 7),
+                                                                                                    (23, 1),
+                                                                                                    (23, 2),
+                                                                                                    (23, 3),
+                                                                                                    (23, 4),
+                                                                                                    (23, 5),
+                                                                                                    (23, 6),
+                                                                                                    (23, 7);
+        </sql>
+    </changeSet>
+
+    <!-- 19. Inline SQL to insert data into security.users -->
+    <changeSet id="19" author="system" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM security.users;
+            </sqlCheck>
+        </preConditions>
+        <sql splitStatements="true" endDelimiter=";">
+            INSERT INTO security.users (id, username, password, enabled) VALUES
+                                                                             (1, 'admin', 'adminpass', TRUE),
+                                                                             (2, 'agency', 'agencypass', TRUE);
+        </sql>
+    </changeSet>
+
+    <!-- 20. Inline SQL to insert data into security.authorities -->
+    <changeSet id="20" author="system" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM security.authorities;
+            </sqlCheck>
+        </preConditions>
+        <sql splitStatements="true" endDelimiter=";">
+            INSERT INTO security.authorities (id, username, authority) VALUES
+                                                                           (1, 'admin', 'ROLE_ADMIN'),
+                                                                           (2, 'agency', 'ROLE_AGENCY');
+        </sql>
+    </changeSet>
+</databaseChangeLog>
