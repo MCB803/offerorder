@@ -57,22 +57,14 @@ public class RouteServiceImpl implements RouteService {
         }
     }
 
-    /**
-     * Caches the list of available transports for the given dayOfWeek.
-     */
     @Cacheable(value = "availableTransportsCache", key = "#dayOfWeek")
     public List<Transportation> getAvailableTransports(int dayOfWeek) {
-        logger.debug("Fetching available transports for day {}", dayOfWeek);
         return transportationRepository.findByOperatingDaysContaining(dayOfWeek);
     }
 
-    /**
-     * Caches the adjacency list for the given dayOfWeek.
-     */
     @Cacheable(value = "adjacencyListCache", key = "#dayOfWeek")
     public Map<Long, List<Transportation>> getAdjacencyList(int dayOfWeek) {
         List<Transportation> availableTransports = getAvailableTransports(dayOfWeek);
-        logger.debug("Building adjacency list from {} transports", availableTransports.size());
         return availableTransports.stream()
                 .collect(Collectors.groupingBy(t -> t.getOrigin().getId()));
     }

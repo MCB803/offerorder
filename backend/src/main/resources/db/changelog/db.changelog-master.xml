@@ -5,7 +5,6 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
-    <!-- 1. Create schema 'security' if it does not exist -->
     <changeSet id="1" author="mert">
         <preConditions onFail="MARK_RAN" onError="MARK_RAN">
             <sqlCheck expectedResult="0">
@@ -15,7 +14,6 @@
         <sql>CREATE SCHEMA IF NOT EXISTS security;</sql>
     </changeSet>
 
-    <!-- 4. Create sequence for public.locations -->
     <changeSet id="4" author="mert">
         <preConditions onFail="MARK_RAN" onError="MARK_RAN">
             <not>
@@ -25,7 +23,6 @@
         <createSequence sequenceName="locations_id_seq" schemaName="public" startValue="1" incrementBy="1" cacheSize="1"/>
     </changeSet>
 
-    <!-- 5. Create public.locations table -->
     <changeSet id="5" author="mert">
         <preConditions onFail="MARK_RAN" onError="MARK_RAN">
             <not>
@@ -53,7 +50,6 @@
         <addUniqueConstraint tableName="locations" schemaName="public" columnNames="location_code" constraintName="locations_location_code_key"/>
     </changeSet>
 
-    <!-- 6. Set default value for locations.id -->
     <changeSet id="6" author="mert">
         <preConditions onFail="MARK_RAN" onError="MARK_RAN">
             <tableExists tableName="locations" schemaName="public"/>
@@ -62,7 +58,6 @@
                          defaultValueComputed="nextval('public.locations_id_seq'::regclass)"/>
     </changeSet>
 
-    <!-- 7. Create public.transportation_operating_days table -->
     <changeSet id="7" author="mert">
         <preConditions onFail="MARK_RAN" onError="MARK_RAN">
             <not>
@@ -81,7 +76,6 @@
                        columnNames="transportation_id, operating_day" constraintName="transportation_operating_days_pkey"/>
     </changeSet>
 
-    <!-- 8. Create sequence for public.transportations -->
     <changeSet id="8" author="mert">
         <preConditions onFail="MARK_RAN" onError="MARK_RAN">
             <not>
@@ -91,7 +85,6 @@
         <createSequence sequenceName="transportations_id_seq" schemaName="public" startValue="1" incrementBy="1" cacheSize="1"/>
     </changeSet>
 
-    <!-- 9. Create public.transportations table -->
     <changeSet id="9" author="mert">
         <preConditions onFail="MARK_RAN" onError="MARK_RAN">
             <not>
@@ -117,7 +110,6 @@
                          defaultValueComputed="nextval('public.transportations_id_seq'::regclass)"/>
     </changeSet>
 
-    <!-- 10. Create security.users table -->
     <changeSet id="10" author="mert">
         <preConditions onFail="MARK_RAN" onError="MARK_RAN">
             <not>
@@ -145,7 +137,6 @@
         <addUniqueConstraint tableName="users" schemaName="security" columnNames="username" constraintName="users_username_key"/>
     </changeSet>
 
-    <!-- 11. Create security.authorities table -->
     <changeSet id="11" author="mert">
         <preConditions onFail="MARK_RAN" onError="MARK_RAN">
             <not>
@@ -169,7 +160,6 @@
         <addPrimaryKey tableName="authorities" schemaName="security" columnNames="id" constraintName="authorities_pkey"/>
     </changeSet>
 
-    <!-- 12. Add foreign key constraint for transportation_operating_days.transportation_id -->
     <changeSet id="12" author="mert" runOnChange="true">
         <preConditions onFail="MARK_RAN" onError="MARK_RAN">
             <not>
@@ -187,7 +177,6 @@
                                  referencedTableSchemaName="public"/>
     </changeSet>
 
-    <!-- 13. Add foreign key constraint for transportations.origin_id -->
     <changeSet id="13" author="mert" runOnChange="true">
         <preConditions onFail="MARK_RAN" onError="MARK_RAN">
             <not>
@@ -205,7 +194,6 @@
                                  referencedTableSchemaName="public"/>
     </changeSet>
 
-    <!-- 14. Add foreign key constraint for transportations.destination_id -->
     <changeSet id="14" author="mert" runOnChange="true">
         <preConditions onFail="MARK_RAN" onError="MARK_RAN">
             <not>
@@ -223,7 +211,6 @@
                                  referencedTableSchemaName="public"/>
     </changeSet>
 
-    <!-- 15. Add foreign key constraint for security.authorities.username -->
     <changeSet id="15" author="mert" runOnChange="true">
         <preConditions onFail="MARK_RAN" onError="MARK_RAN">
             <not>
@@ -241,7 +228,6 @@
                                  referencedTableSchemaName="security"/>
     </changeSet>
 
-    <!-- 16. Inline SQL to insert data into locations -->
     <changeSet id="16" author="system" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">
@@ -269,7 +255,6 @@
         </sql>
     </changeSet>
 
-    <!-- 17. Inline SQL to insert data into transportations -->
     <changeSet id="17" author="system" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">
@@ -297,8 +282,6 @@
         </sql>
     </changeSet>
 
-    <!-- 18. Inline SQL to insert data into transportation_operating_days -->
-    <!-- Replace the sample values below with the exact 107 rows from your CSV. -->
     <changeSet id="18" author="system" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">
@@ -417,7 +400,6 @@
         </sql>
     </changeSet>
 
-    <!-- 19. Inline SQL to insert data into security.users -->
     <changeSet id="19" author="system" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">
@@ -431,7 +413,6 @@
         </sql>
     </changeSet>
 
-    <!-- 20. Inline SQL to insert data into security.authorities -->
     <changeSet id="20" author="system" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">

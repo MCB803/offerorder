@@ -34,10 +34,6 @@ public class RouteController {
         this.locationService = locationService;
     }
 
-    /**
-     * GET endpoint to retrieve valid routes.
-     * Returns a CompletableFuture for non-blocking behavior.
-     */
     @GetMapping
     public CompletableFuture<ResponseEntity<ApiResponse<List<List<TransportationResponseDTO>>>>> getRoutes(
             @RequestParam @NotNull(message = "Origin id must not be blank") Long originId,

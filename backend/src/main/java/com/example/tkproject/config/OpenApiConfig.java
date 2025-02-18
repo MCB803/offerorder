@@ -11,8 +11,8 @@ public class OpenApiConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Flight Routes API")
+                        .title("Offer Order API")
                         .version("v1.0")
-                        .description("API documentation for the Flight Routes System"));
+                        .description("API documentation for the Offer Order System"));
     }
 }

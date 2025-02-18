@@ -44,6 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/locations/**", "/api/transportations/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
+                .httpBasic(withDefaults())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

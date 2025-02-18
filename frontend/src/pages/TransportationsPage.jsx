@@ -5,7 +5,7 @@ import EditTransportationModal from '../components/EditTransportationModal';
 
 import {
     Table, TableHead, TableBody, TableRow, TableCell, Select, MenuItem,
-    Checkbox, Button, TextField, FormControlLabel, Box, Typography
+    Checkbox, Button, TextField, FormControlLabel, FormControl, InputLabel, Box, Typography
 } from '@mui/material';
 
 const TRANSPORTATION_TYPES = ['BUS', 'FLIGHT', 'UBER', 'SUBWAY'];
@@ -129,30 +129,36 @@ const TransportationsPage = () => {
         <Box p={3}>
             <Typography variant="h4" gutterBottom>Transportations Management</Typography>
 
-            <form onSubmit={handleAddTransportation}>
+            <form>
                 <Box display="flex" gap={2} mb={2}>
-                    <Select fullWidth name="originId" value={newTrans.originId} onChange={handleNewChange} required>
-                        <MenuItem value="">Select Origin</MenuItem>
-                        {locations.map(loc => (
-                            <MenuItem key={loc.id} value={loc.id}>{loc.name}</MenuItem>
-                        ))}
-                    </Select>
-
-                    <Select fullWidth name="destinationId" value={newTrans.destinationId} onChange={handleNewChange} required>
-                        <MenuItem value="">Select Destination</MenuItem>
-                        {locations.map(loc => (
-                            <MenuItem key={loc.id} value={loc.id}>{loc.name}</MenuItem>
-                        ))}
-                    </Select>
-
-                    <Select fullWidth name="type" value={newTrans.type} onChange={handleNewChange} required>
-                        <MenuItem value="">Select Type</MenuItem>
-                        {TRANSPORTATION_TYPES.map(type => (
-                            <MenuItem key={type} value={type}>{type}</MenuItem>
-                        ))}
-                    </Select>
+                    <FormControl fullWidth>
+                        <InputLabel>Origin</InputLabel>
+                        <Select name="originId" value={newTrans.originId} onChange={handleNewChange} required>
+                            <MenuItem value="" disabled>Select Origin</MenuItem>
+                            {locations.map(loc => (
+                                <MenuItem key={loc.id} value={loc.id}>{loc.name}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <FormControl fullWidth>
+                        <InputLabel>Destination</InputLabel>
+                        <Select name="destinationId" value={newTrans.destinationId} onChange={handleNewChange} required>
+                            <MenuItem value="" disabled>Select Destination</MenuItem>
+                            {locations.map(loc => (
+                                <MenuItem key={loc.id} value={loc.id}>{loc.name}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <FormControl fullWidth>
+                        <InputLabel>Transportation Type</InputLabel>
+                        <Select name="type" value={newTrans.type} onChange={handleNewChange} required>
+                            <MenuItem value="" disabled>Select Type</MenuItem>
+                            {TRANSPORTATION_TYPES.map(type => (
+                                <MenuItem key={type} value={type}>{type}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                 </Box>
-
                 {WEEKDAYS.map(day => (
                     <FormControlLabel
                         key={day.id}
@@ -160,11 +166,16 @@ const TransportationsPage = () => {
                         label={day.name}
                     />
                 ))}
-
                 <Button type="submit" variant="contained" color="primary">Add Transportation</Button>
             </form>
 
-            <TextField label="Filter by Name" value={filter} onChange={handleFilterChange} fullWidth margin="normal" />
+            <TextField
+                label="Filter by Origin or Destination"
+                value={filter}
+                onChange={handleFilterChange}
+                fullWidth
+                margin="normal"
+            />
 
             <Table>
                 <TableHead>

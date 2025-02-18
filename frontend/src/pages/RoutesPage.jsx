@@ -42,7 +42,6 @@ const RoutesPage = () => {
             });
     }, []);
 
-    // Clear selected route and overlay if any input changes.
     useEffect(() => {
         setSelectedRoute(null);
         setOverlayOpen(false);
@@ -88,8 +87,7 @@ const RoutesPage = () => {
         setOverlayOpen(true);
     };
 
-    // Render route details overlay with circles (all gray) for each stop, and dashed lines between stops
-    // with a label for the transportation type positioned to the right of the dashed line.
+
     const renderRouteDetails = (route) => {
         if (!route || route.length === 0) return null;
 
@@ -110,7 +108,6 @@ const RoutesPage = () => {
         return (
             <Box sx={{ p: 2, width: "100%", overflowY: "auto" }}>
                 {stops.map((stop, index) => {
-                    // For the circle, we always use gray.
                     const circleColor = "gray";
 
                     return (
