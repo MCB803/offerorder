@@ -11,6 +11,7 @@
 - **Liquibase** for database migrations
 - Dockerized deployment
 - Backend validations enforced
+- Logging for easy debugging and error tracking.
 
 ### Frontend (React SPA)
 - Responsive single-page application (SPA)
@@ -42,7 +43,9 @@
    docker-compose up --build
    ```
 
-##If you want to set it up locally
+If you want to set it up locally
+
+
 ### Backend:
 1. Clone the offerorder repository:
    ```bash
