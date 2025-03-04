@@ -10,6 +10,7 @@ const transportColors = {
     UBER: "purple"
 };
 
+// Create a custom DivIcon for route labels.
 const createLabelIcon = (label, color) => {
     return L.divIcon({
         html: `<div style="background-color: ${color}; color: white; padding: 2px 4px; border-radius: 4px; font-size: 0.75rem;">${label}</div>`,

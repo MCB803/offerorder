@@ -14,16 +14,17 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
     const navigate = useNavigate();
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState(null); // user info: { username, role, token }
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [error, setError] = useState("");
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
             const parsed = JSON.parse(storedUser);
             setUser(parsed);
+            setIsAuthenticated(true);
         }
-        setLoading(false);
     }, []);
 
     const login = async (credentials) => {
@@ -33,24 +34,26 @@ export const AuthProvider = ({ children }) => {
             const userData = { token, role, username };
 
             setUser(userData);
+            setIsAuthenticated(true);
             localStorage.setItem("user", JSON.stringify(userData));
             localStorage.setItem("jwtToken", token);
 
             navigate(role === "ADMIN" ? "/locations" : "/routes", { replace: true });
-        } catch (error) {
-            console.error("Login failed", error);
+        } catch (err) {
+            setError(err.response?.data?.message || "Login failed");
         }
     };
 
-
     const logout = () => {
         setUser(null);
+        setIsAuthenticated(false);
         localStorage.removeItem("user");
+        localStorage.removeItem("jwtToken");
         navigate("/login", { replace: true });
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, loading }}>
+        <AuthContext.Provider value={{ user, isAuthenticated, login, logout, error, setError }}>
             {children}
         </AuthContext.Provider>
     );

@@ -26,7 +26,8 @@ const RoutesPage = () => {
     const [origin, setOrigin] = useState("");
     const [destination, setDestination] = useState("");
     const [tripDate, setTripDate] = useState("");
-    const [routes, setRoutes] = useState([]);
+    // Use groupedRoutes instead of a simple routes array
+    const [groupedRoutes, setGroupedRoutes] = useState([]);
     const [selectedRoute, setSelectedRoute] = useState(null);
     const [error, setError] = useState("");
     const [overlayOpen, setOverlayOpen] = useState(false);
@@ -60,12 +61,13 @@ const RoutesPage = () => {
         }
         setError("");
 
+        // Call the new grouped endpoint
         axiosInstance
-            .get("/api/routes", {
+            .get("/api/routes/grouped", {
                 params: { originId: origin, destinationId: destination, tripDate }
             })
             .then((response) => {
-                setRoutes(response.data.payload || []);
+                setGroupedRoutes(response.data.payload || []);
             })
             .catch(() => {
                 setError("Error fetching routes");
@@ -86,7 +88,6 @@ const RoutesPage = () => {
         setSelectedRoute(route);
         setOverlayOpen(true);
     };
-
 
     const renderRouteDetails = (route) => {
         if (!route || route.length === 0) return null;
@@ -109,7 +110,6 @@ const RoutesPage = () => {
             <Box sx={{ p: 2, width: "100%", overflowY: "auto" }}>
                 {stops.map((stop, index) => {
                     const circleColor = "gray";
-
                     return (
                         <Box key={index}>
                             <Box sx={{ display: "flex", alignItems: "center", ml: 1 }}>
@@ -134,15 +134,13 @@ const RoutesPage = () => {
                                     )}
                                 </Box>
                             </Box>
-
                             {index < stops.length - 1 && (
                                 <Box
                                     sx={{
                                         position: "relative",
                                         ml: 2.1,
                                         borderLeft: `3px dashed ${
-                                            transportColors[stops[index + 1].type?.toUpperCase()] ||
-                                            "gray"
+                                            transportColors[stops[index + 1].type?.toUpperCase()] || "gray"
                                         }`,
                                         height: 80,
                                         mt: 1,
@@ -161,9 +159,7 @@ const RoutesPage = () => {
                                             variant="caption"
                                             sx={{
                                                 color:
-                                                    transportColors[
-                                                        stops[index + 1].type?.toUpperCase()
-                                                        ] || "gray",
+                                                    transportColors[stops[index + 1].type?.toUpperCase()] || "gray",
                                                 fontWeight: "bold"
                                             }}
                                         >
@@ -204,11 +200,7 @@ const RoutesPage = () => {
                                 Select Origin
                             </MenuItem>
                             {locations.map((loc) => (
-                                <MenuItem
-                                    key={loc.id}
-                                    value={loc.id}
-                                    disabled={loc.id === destination}
-                                >
+                                <MenuItem key={loc.id} value={loc.id} disabled={loc.id === destination}>
                                     {loc.name}
                                 </MenuItem>
                             ))}
@@ -245,11 +237,7 @@ const RoutesPage = () => {
                                 Select Destination
                             </MenuItem>
                             {locations.map((loc) => (
-                                <MenuItem
-                                    key={loc.id}
-                                    value={loc.id}
-                                    disabled={loc.id === origin}
-                                >
+                                <MenuItem key={loc.id} value={loc.id} disabled={loc.id === origin}>
                                     {loc.name}
                                 </MenuItem>
                             ))}
@@ -294,20 +282,28 @@ const RoutesPage = () => {
                 <Typography variant="h6" gutterBottom>
                     Available Routes
                 </Typography>
-                {routes.length > 0 ? (
-                    routes.map((route, index) => (
-                        <Card
-                            key={index}
-                            onClick={() => handleRouteSelect(route)}
-                            sx={{
-                                p: 2,
-                                mt: 1,
-                                cursor: "pointer",
-                                bgcolor: selectedRoute === route ? "#f0f0f0" : "white"
-                            }}
-                        >
-                            {getRouteSummary(route)}
-                        </Card>
+                {groupedRoutes.length > 0 ? (
+                    groupedRoutes.map((group, groupIndex) => (
+                        <Box key={groupIndex} sx={{ mb: 3 }}>
+                            {/* City header to indicate group */}
+                            <Typography variant="subtitle1" sx={{ fontWeight: "bold", mb: 1 }}>
+                                {group.city}
+                            </Typography>
+                            {group.routes.map((route, routeIndex) => (
+                                <Card
+                                    key={routeIndex}
+                                    onClick={() => handleRouteSelect(route)}
+                                    sx={{
+                                        p: 2,
+                                        mt: 1,
+                                        cursor: "pointer",
+                                        bgcolor: selectedRoute === route ? "#f0f0f0" : "white"
+                                    }}
+                                >
+                                    {getRouteSummary(route)}
+                                </Card>
+                            ))}
+                        </Box>
                     ))
                 ) : (
                     <Typography>No routes found.</Typography>
