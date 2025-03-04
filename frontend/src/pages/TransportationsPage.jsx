@@ -4,14 +4,32 @@ import ErrorModal from '../components/ErrorModal';
 import EditTransportationModal from '../components/EditTransportationModal';
 
 import {
-    Table, TableHead, TableBody, TableRow, TableCell, Select, MenuItem,
-    Checkbox, Button, TextField, FormControlLabel, FormControl, InputLabel, Box, Typography
+    Table,
+    TableHead,
+    TableBody,
+    TableRow,
+    TableCell,
+    Select,
+    MenuItem,
+    Checkbox,
+    Button,
+    TextField,
+    FormControlLabel,
+    FormControl,
+    InputLabel,
+    Box,
+    Typography
 } from '@mui/material';
 
 const TRANSPORTATION_TYPES = ['BUS', 'FLIGHT', 'UBER', 'SUBWAY'];
 const WEEKDAYS = [
-    { id: 1, name: 'Monday' }, { id: 2, name: 'Tuesday' }, { id: 3, name: 'Wednesday' },
-    { id: 4, name: 'Thursday' }, { id: 5, name: 'Friday' }, { id: 6, name: 'Saturday' }, { id: 7, name: 'Sunday' }
+    { id: 1, name: 'Monday' },
+    { id: 2, name: 'Tuesday' },
+    { id: 3, name: 'Wednesday' },
+    { id: 4, name: 'Thursday' },
+    { id: 5, name: 'Friday' },
+    { id: 6, name: 'Saturday' },
+    { id: 7, name: 'Sunday' }
 ];
 
 const TransportationsPage = () => {
@@ -105,7 +123,6 @@ const TransportationsPage = () => {
         setEditModalOpen(true);
     };
 
-
     const handleUpdateTransportation = async () => {
         try {
             await axiosInstance.put(`/api/transportations/${selectedTransport.id}`, selectedTransport);
@@ -127,34 +144,63 @@ const TransportationsPage = () => {
 
     return (
         <Box p={3}>
-            <Typography variant="h4" gutterBottom>Transportations Management</Typography>
+            <Typography variant="h4" gutterBottom>
+                Transportations Management
+            </Typography>
 
-            <form>
+            <form onSubmit={handleAddTransportation}>
                 <Box display="flex" gap={2} mb={2}>
                     <FormControl fullWidth>
                         <InputLabel>Origin</InputLabel>
-                        <Select name="originId" value={newTrans.originId} onChange={handleNewChange} required>
-                            <MenuItem value="" disabled>Select Origin</MenuItem>
+                        <Select
+                            name="originId"
+                            value={newTrans.originId}
+                            onChange={handleNewChange}
+                            required
+                        >
+                            <MenuItem value="" disabled>
+                                Select Origin
+                            </MenuItem>
                             {locations.map(loc => (
-                                <MenuItem key={loc.id} value={loc.id}>{loc.name}</MenuItem>
+                                <MenuItem key={loc.id} value={loc.id}>
+                                    {loc.name}
+                                </MenuItem>
                             ))}
                         </Select>
                     </FormControl>
                     <FormControl fullWidth>
                         <InputLabel>Destination</InputLabel>
-                        <Select name="destinationId" value={newTrans.destinationId} onChange={handleNewChange} required>
-                            <MenuItem value="" disabled>Select Destination</MenuItem>
+                        <Select
+                            name="destinationId"
+                            value={newTrans.destinationId}
+                            onChange={handleNewChange}
+                            required
+                        >
+                            <MenuItem value="" disabled>
+                                Select Destination
+                            </MenuItem>
                             {locations.map(loc => (
-                                <MenuItem key={loc.id} value={loc.id}>{loc.name}</MenuItem>
+                                <MenuItem key={loc.id} value={loc.id}>
+                                    {loc.name}
+                                </MenuItem>
                             ))}
                         </Select>
                     </FormControl>
                     <FormControl fullWidth>
                         <InputLabel>Transportation Type</InputLabel>
-                        <Select name="type" value={newTrans.type} onChange={handleNewChange} required>
-                            <MenuItem value="" disabled>Select Type</MenuItem>
+                        <Select
+                            name="type"
+                            value={newTrans.type}
+                            onChange={handleNewChange}
+                            required
+                        >
+                            <MenuItem value="" disabled>
+                                Select Type
+                            </MenuItem>
                             {TRANSPORTATION_TYPES.map(type => (
-                                <MenuItem key={type} value={type}>{type}</MenuItem>
+                                <MenuItem key={type} value={type}>
+                                    {type}
+                                </MenuItem>
                             ))}
                         </Select>
                     </FormControl>
@@ -162,11 +208,18 @@ const TransportationsPage = () => {
                 {WEEKDAYS.map(day => (
                     <FormControlLabel
                         key={day.id}
-                        control={<Checkbox checked={newTrans.operatingDays.includes(day.id)} onChange={() => handleOperatingDaysChange(day.id)} />}
+                        control={
+                            <Checkbox
+                                checked={newTrans.operatingDays.includes(day.id)}
+                                onChange={() => handleOperatingDaysChange(day.id)}
+                            />
+                        }
                         label={day.name}
                     />
                 ))}
-                <Button type="submit" variant="contained" color="primary">Add Transportation</Button>
+                <Button type="submit" variant="contained" color="primary">
+                    Add Transportation
+                </Button>
             </form>
 
             <TextField
@@ -194,14 +247,27 @@ const TransportationsPage = () => {
                             <TableCell>{trans.origin?.name || 'N/A'}</TableCell>
                             <TableCell>{trans.destination?.name || 'N/A'}</TableCell>
                             <TableCell>
-                                {trans.operatingDays.map(dayId => {
-                                    const day = WEEKDAYS.find(w => w.id === dayId);
-                                    return day ? day.name.slice(0, 3) : '';
-                                }).join(', ')}
+                                {trans.operatingDays
+                                    .map(dayId => {
+                                        const day = WEEKDAYS.find(w => w.id === dayId);
+                                        return day ? day.name.slice(0, 3) : '';
+                                    })
+                                    .join(', ')}
                             </TableCell>
                             <TableCell>
-                                <Button onClick={() => handleEditTransportation(trans)} variant="outlined">Edit</Button>
-                                <Button onClick={() => handleDeleteTransportation(trans.id)} variant="outlined" color="error">Delete</Button>
+                                <Button
+                                    onClick={() => handleEditTransportation(trans)}
+                                    variant="outlined"
+                                >
+                                    Edit
+                                </Button>
+                                <Button
+                                    onClick={() => handleDeleteTransportation(trans.id)}
+                                    variant="outlined"
+                                    color="error"
+                                >
+                                    Delete
+                                </Button>
                             </TableCell>
                         </TableRow>
                     ))}
@@ -215,9 +281,11 @@ const TransportationsPage = () => {
                 onChange={setSelectedTransport}
                 onSave={handleUpdateTransportation}
             />
-
-
-            <ErrorModal open={modalOpen} onClose={() => setModalOpen(false)} errorMessage={error} />
+            <ErrorModal
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
+                errorMessage={error}
+            />
         </Box>
     );
 };

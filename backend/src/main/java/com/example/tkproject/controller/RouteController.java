@@ -1,6 +1,7 @@
 package com.example.tkproject.controller;
 
 import com.example.tkproject.dto.ApiResponse;
+import com.example.tkproject.dto.GroupedRoutesDTO;
 import com.example.tkproject.dto.LocationDTO;
 import com.example.tkproject.dto.TransportationResponseDTO;
 import com.example.tkproject.service.LocationService;
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Validated
 @CrossOrigin(origins = "http://localhost:3000")
@@ -73,5 +76,39 @@ public class RouteController {
                             "Error fetching locations: " + ex.getMessage(), null);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
+    }
+
+    @GetMapping("/grouped")
+    public CompletableFuture<ResponseEntity<ApiResponse<List<GroupedRoutesDTO>>>> getGroupedRoutes(
+            @RequestParam @NotNull(message = "Origin id must not be blank") Long originId,
+            @RequestParam @NotNull(message = "Destination id must not be blank") Long destinationId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate tripDate) {
+
+        return routeService.findRoutes(originId, destinationId, tripDate)
+                .thenApply(routes -> {
+                    Map<String, List<List<TransportationResponseDTO>>> groupedRoutes = routes.parallelStream()
+                            .collect(Collectors.groupingBy(route ->
+                                    route.stream()
+                                            .filter(t -> "FLIGHT".equals(t.getType()))
+                                            .findFirst()
+                                            .map(flight -> flight.getOrigin().getCity())
+                                            .orElse("Unknown")
+                            ));
+
+                    List<GroupedRoutesDTO> groupedRoutesList = groupedRoutes.entrySet().stream()
+                            .map(entry -> new GroupedRoutesDTO(entry.getKey(), entry.getValue()))
+                            .collect(Collectors.toList());
+
+                    ApiResponse<List<GroupedRoutesDTO>> response =
+                            new ApiResponse<>(HttpStatus.OK.value(), "Grouped routes fetched successfully", groupedRoutesList);
+                    return ResponseEntity.ok(response);
+                })
+                .exceptionally(ex -> {
+                    logger.error("Error fetching grouped routes: {}", ex.getMessage(), ex);
+                    ApiResponse<List<GroupedRoutesDTO>> errorResponse =
+                            new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                                    "Error fetching grouped routes: " + ex.getMessage(), null);
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+                });
     }
 }

@@ -1,13 +1,13 @@
-# Stage 1: Build the application and run tests
+# Stage 1: Build the application
 FROM maven:3.9.9-eclipse-temurin-21 AS build
 WORKDIR /app
 # Copy the pom.xml first to leverage Docker cache for dependencies
 COPY pom.xml .
-# Download dependencies (offline mode)
+# Pre-download dependencies
 RUN mvn dependency:go-offline
-# Copy the rest of your source code
+# Copy the rest of the source code
 COPY . .
-# Run tests and build the jar
+# Build the jar without running tests
 RUN mvn clean package -Dmaven.test.skip=true
 
 # Stage 2: Run the application
